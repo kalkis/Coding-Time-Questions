@@ -46,15 +46,16 @@ f 3 ->
 * Write 3 q statements showing examples of 3 different uses of ! operator
 
 > Possible uses:
-> 
->  * Making a dictionary: `a`b`c!1 2 3
->  * internal functions: -11! (tickerplant logs) -9!/-8! (convert to/from bytes) -1! (standard output)
->  * functional update/delete:
->    "update flag:1b from t where price>avg price" -> ![t;enlist(>;`price;(avg;`price));0b;enlist[`flag]!enlist 1b]
->    "delete flag from t" -> ![t;();0b;enlist`flag]
->  * keying n columns of table/unkey table n!tab 0!tab
->  * enumerate list: x:`a`b`c`d; `x!0 2 3 -> `x$`a`c`d
->  * display and return: 0N!1+1 -> 2 2
+> ```
+>  Making a dictionary: `a`b`c!1 2 3
+>  internal functions: -11! (tickerplant logs) -9!/-8! (convert to/from bytes) -1! (standard output)
+>  functional update/delete:
+>  "update flag:1b from t where price>avg price" -> ![t;enlist(>;`price;(avg;`price));0b;enlist[`flag]!enlist 1b]
+>  "delete flag from t" -> ![t;();0b;enlist`flag]
+>  keying n columns of table/unkey table n!tab 0!tab
+>  enumerate list: x:`a`b`c`d; `x!0 2 3 -> `x$`a`c`d
+>  display and return: 0N!1+1 -> 2 2
+> ```
 
 * Write a function that will take an integer as an argument, and returns a table with that number of columns
 
@@ -80,13 +81,17 @@ col1 col2 col3
 > col0 col1
 > ---------
 > 0    1
-> 
-> or f:{flip(`$"col",/:string til x)#()!()} for an empty table
+> ```
+> or 
+> ```
+> f:{flip(`$"col",/:string til x)#()!()}
+> ```
+> for an empty table
 
 * Create a table, t, with 1 column name containing 50 random numbers between 0 and 50. Add a column which will return yes or no based on whether or not the number is greater than 25
 
 > Make use of vector conditional:
-> 
+> ```
 > t:([]nums:50?50)
 > update flag:?[nums>25;`yes;`no]from t
 > nums flag
@@ -112,9 +117,24 @@ col1 col2 col3
 > 0    no
 > 32   yes
 > ..
+> ```
 
 
 * Give five different ways of getting the "o" from the string "hello"
+
+> Lots of different ways:
+> ```
+>  -1#"hello" -> ,"o"
+>  4_"hello" -> ,"o"
+>  1#reverse "hello" -> ,"o"
+>  -4_reverse "hello" -> ,"o"
+>  "hello" 4 -> "o"
+>  @["hello";4] -> "o"
+>  "hello"@4 -> "o"
+>  "hello"where"hello"="o" -> ,"o"
+>  last hello -> ,"o"
+>  first reverse hello -> ,"o"
+> ```
 
 ## 'Intermediate'
 
@@ -172,20 +192,22 @@ f 10 -> 0 1 1 2 3 5 8 13 21 34
 
 * Write a function to asynchronously send a string argument as a message to all connected handles at once, e.g:
 
-`f "hello world"`
+```
+f "hello world"
+```
 
 Demonstrate by sending to at least 2 handles
 
 >  2 examples:
-> 
+> ```
 >  f1:{[x] -25!(key .z.W;x)}
 > 
 >  f2:{[x]neg[key .z.W]x}
-> 
+> ```
 >  Make sure to set up .z.ps on the connected processes to display the message correctly, something like:
-> 
+> ```
 >  .z.ps:{show x}
-> 
+> ```
 > Bonus: Difference between -25! and using neg[handles]? how to make sure -25! is defined?
 
 * Load the questions/resources/intermediate/quotes.csv and questions/resources/intermediate/trades.csv files as tables quotes and trades into a q session. Join the prevailing quote to each trade by sym 
@@ -193,14 +215,14 @@ Demonstrate by sending to at least 2 handles
 > Classic use case for aj as-of join - see solutions/resources/intermediate/joined.csv for the expected output
 > 
 >  First parse the files:
-> 
->  `quotes:("PSSFFJJ";csv)0: `:quotes.csv`
->  `trades:("PSSFJ";csv)0: `:trades.csv`
-> 
+>  ```
+>  quotes:("PSSFFJJ";csv)0: `:quotes.csv
+>  trades:("PSSFJ";csv)0: `:trades.csv
+>  ```
 >  Then run the join:
-> 
->  `aj[`sym`time;trades;quotes]`
-> 
+> ```
+>  aj[`sym`time;trades;quotes]
+> ```
 > Bonus: how to optimize for much larger data sets?
 
 ## 'Hard'
@@ -227,24 +249,25 @@ Demonstrate by sending to at least 2 handles
 .e.g:
 
 ```
-a:([]date:3#.z.d;sym:3?`3)
-.namespace.blah:{x*y%100}[4]
-b:("apples";1f;`oranges)
-
-f `a -> "table"
-f `b -> "other"
-f `f -> "function"
-f `.namespace.blah -> "projection"
-f `c -> "undefined"
+ a:([]date:3#.z.d;sym:3?`3)
+ .namespace.blah:{x*y%100}[4]
+ b:("apples";1f;`oranges)
+ 
+ f `a -> "table"
+ f `b -> "other"
+ f `f -> "function"
+ f `.namespace.blah -> "projection"
+ f `c -> "undefined"
 ```
 
 > Using error trap:
-> 
-> `f:{@[{[x]d:98 99 100 104h!("table";"dictionary";"function";"projection");$[""~d y:type value x;"other";d y]};x;"undefined"]}`
-> 
+> ```
+> f:{@[{[x]d:98 99 100 104h!("table";"dictionary";"function";"projection");$[""~d y:type value x;"other";d y]};x;"undefined"]}
+> ```
 > Could also check root namespace:
-> 
-> `f:{[x]d:98 99 100 104h!("table";"dictionary";"function";"projection");$[x in key`.;$[""~d y:type value x;"other";d y];"undefined"]}`
+> ```
+> f:{[x]d:98 99 100 104h!("table";"dictionary";"function";"projection");$[x in key`.;$[""~d y:type value x;"other";d y];"undefined"]}
+> ```
 > 
 > To be more thorough, how would you traverse all namespaces with variable depths?
 > 
@@ -254,7 +277,9 @@ f `c -> "undefined"
 
 * Write a function to append this in memory table to an on-disk date partitioned hdb /path/to/hdb
 
-`px:([]date:raze 3#/:2021.01.01+til 3;sym:`a`b`c`a`b`c`a`b`c;price:9?100f)`
+```
+px:([]date:raze 3#/:2021.01.01+til 3;sym:`a`b`c`a`b`c`a`b`c;price:9?100f)
+```
 
 > Saving to disk:
 > 
@@ -288,17 +313,16 @@ f `c -> "undefined"
 * Find the volume weighted average price (VWAP) for each sym in 5 minute buckets in the resources/intermediate/trades.csv table and the time-weighted average spread (TWAS)in 5 minutes buckets in the resources/intermediate/quotes.csv table. Which sym(s) have the highest VWAP and TWAS?
 
 >   For VWAP:
->  
+>  ```
 >   trades1:select vwap:size wavg price by sym, bucket:5 xbar time.minute from trades;
->  
+>  ```
 >   For TWAS:
->  
+>  ```
 >   quotes1:update spread:ask-bid from quotes;
 >   quotes1:select twas:time wavg spread by sym, bucket:5 xbar time.minute from quotes;
->  
->  
+>  ```
 >   Then to get the highest values for VWAP and TWAS from each table
->  
+>  ```
 >   select from trades1 where vwap=max vwap
 >   sym  bucket| vwap
 >   -----------| -----
@@ -307,3 +331,4 @@ f `c -> "undefined"
 >   sym  bucket| twas
 >   -----------| ----------
 >   MSFT 16:00 | 0.05333333
+> ```

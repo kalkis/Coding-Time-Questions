@@ -58,7 +58,9 @@ f 10 -> 0 1 1 2 3 5 8 13 21 34
 
 * Write a function to asynchronously send a string argument as a message to all connected handles at once, e.g:
 
-`f "hello world"`
+```
+f "hello world"
+```
 
 Demonstrate by sending to at least 2 handles
 
@@ -88,7 +90,9 @@ f `c -> "undefined"
 
 * Write a function to append this in memory table to an on-disk date partitioned hdb /path/to/hdb
 
-`px:([]date:raze 3#/:2021.01.01+til 3;sym:`a`b`c`a`b`c`a`b`c;price:9?100f)`
+```
+px:([]date:raze 3#/:2021.01.01+til 3;sym:`a`b`c`a`b`c`a`b`c;price:9?100f)
+```
 
 
 * Find the volume weighted average price (VWAP) for each sym in 5 minute buckets in the resources/intermediate/trades.csv table and the time-weighted average spread (TWAS)in 5 minutes buckets in the resources/intermediate/quotes.csv table. Which sym(s) have the highest VWAP and TWAS?
