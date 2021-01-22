@@ -48,7 +48,9 @@ f 5 ->
 
 * Write a function to store all keyboard input in a table with the time it was entered and whether it was executed successfully.
 
-* Write a function that takes an integer argument which outputs the first n terms of the fibonacci sequence, starting with 0 e.g:
+* Write a function that takes an integer argument which outputs the first n terms of the Fibonacci sequence, starting with 0: https://en.wikipedia.org/wiki/Fibonacci_number
+
+ e.g:
 
 ```
 f 1 -> 0

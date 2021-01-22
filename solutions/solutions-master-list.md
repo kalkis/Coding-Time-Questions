@@ -176,18 +176,20 @@ f 5 ->
 > ```
 
 
-* Write a function that takes an integer argument which outputs the first n terms of the fibonacci sequence, starting with 0 e.g:
+* Write a function that takes an integer argument which outputs the first n terms of the Fibonacci sequence, starting with 0: https://en.wikipedia.org/wiki/Fibonacci_number
+
+ e.g:
 
 ```
 f 1 -> 0
 f 2 -> 0 1
 f 10 -> 0 1 1 2 3 5 8 13 21 34
-```
+`` 
 
 > some variation on the below:
-> 
+> ``` 
 > f:{x#{x,sum -2#x}/[x;0 1]}
-> 
+> ```
 > In this case, since we start with two numbers the inner function will return a bit more than x terms, so use # to limit the output
 
 * Write a function to asynchronously send a string argument as a message to all connected handles at once, e.g:
