@@ -136,6 +136,87 @@ col1 col2 col3
 >  first reverse hello -> ,"o"
 > ```
 
+* Create a function to calculate the factorial of a positive integer n, e.g
+
+```
+f 4 -> 24
+```
+
+> ```
+> f:{prd 1+til x}
+> ```
+> Bonus: create a solution using explicit recursion with .z.s
+
+* Create a function that takes a positive integer n that will output a pyramid with n rows like the following:
+
+```
+f 5 ->
+
+1
+2 2
+3 3 3
+4 4 4 4
+5 5 5 5 5
+```
+
+> Multiple ways:
+>
+> ```
+> f1:{{x#x}'[1+til x]}
+>
+> f2:{.'[#;2#/:1+til x}
+> ```
+
+* Write a function that takes a string as an argument, and returns true if the string is a palindrome, ignoring whitespace, capitilization and punctuation marks (and all other non-alphanumeric characters)
+
+e.g
+
+```
+f "racecar" -> 1b
+
+f "Madam, I'm Adam" -> 1b
+
+f "i" -> 1b
+
+f "101" -> 1b
+
+f "" -> 0b
+
+f "hello world" -> 0b
+```
+
+> Sanitize the string and strip out any characters that aren't in .Q.a and .Q.n. (or use .Q.an for both)
+> 
+> If the number of characters after sanitizing is 0, return false. Otherwise, check if the string is the same as its reverse
+> 
+> ```
+> f:{[x]$[not count x:x where (x:lower(),x)in .Q.a,.Q.n;0b;x~reverse x]}
+> ```
+
+* Create a function that will return true if a positive integer is a Narcissistic/Armstrong number, where the sum of each digit raised to the power of the number of digits, is equal to itself: https://en.wikipedia.org/wiki/Narcissistic_number
+
+e.g
+
+```
+f 371 -> 1b
+
+f 1 -> 1b
+
+f 1741725 -> 1b
+
+f 22 -> 0b
+```
+
+> Using numbers as the arguments for vs can split a number into the digits in the base of the left argument. Raise each to the power of the number of digits and add together
+> 
+> ```
+> f:{x=sum xexp\:[n;count n:10 vs x]}
+> ```
+> Another method is to cast the number to a string, then cast each character back to an integer and then do the same
+> ```
+> f:{x=sum xexp\:[n;count n:"J"$/:string x]}
+> ```
+
 ## 'Intermediate'
 
 * Create a function to print out the first n rows of Pascals triangle: https://en.wikipedia.org/wiki/Pascal%27s_triangle
@@ -226,6 +307,198 @@ Demonstrate by sending to at least 2 handles
 >  aj[`sym`time;trades;quotes]
 > ```
 > Bonus: how to optimize for much larger data sets?
+
+* Fizzbuzz - Create a function that takes a positive integer n as its only argument, and returns all numbers between 1 and n, but replaces any numbers that are a multiple of 3 with "fizz" and numbers that are a multiple of 5 with "buzz" - it should also replace any numbers that are multiples of both 3 and 5 with "fizzbuzz".
+
+.e.g
+
+```
+f 15 ->
+
+1
+2
+"fizz"
+4
+"buzz"
+"fizz"
+7
+8
+"fizz"
+"buzz"
+11
+"fizz"
+13
+14
+"fizzbuzz"
+```
+
+> add both fizz and buzz to the string to skip checking x mod 15; if its not a multiple of either number, the string will be empty
+> ```
+> f:{[x]{r:"";r,:$[0=x mod 3;"fizz";""];r,:$[0=x mod 5;"buzz";""];:$[not count r;x;r]}each 1+ til x}
+> ```
+
+
+* Create a function that takes a dictionary as an argument, which can run an aggregate function on specified columns in a table for a specified list of syms, - allow the user to input ` to return values for all syms.
+
+ e.g.:
+
+```
+trades:([]time:12:00:00.000+1000*til 27;sym:27#3#`$'.Q.A;price:sum each(-1 0.5 -1.5 -0.5 2 -2 0 -0.25 1)cross 10 20 30;size:27#100 200);
+quotes:update askPrice:bidPrice*1.2,askSize:bidSize from([]time:11:59:59.000+100*til 300;sym:300#3#`$'.Q.A;bidPrice:300#sum each(-1.5 0 -2 -1 1 -3.5 -1.25 -1.5 -2.25)cross 10 20 30;bidSize:300#100 200);
+
+f `table`sym`columns`function!(`trades;`A`B;`price`size;avg) ->
+
+sym| price    size
+---| -----------------
+A  | 9.805556 144.4444
+B  | 19.80556 155.5556
+
+f `table`sym`columns`function!(`quotes;`;`bidPrice;max) ->
+
+sym| bidPrice
+---| --------
+A  | 11
+B  | 21
+C  | 31
+
+```
+> Make sure you handle the cases for 1 column, all syms etc correctly
+> Can use (func;)notation to make sure you create a list for each column
+> ```
+> f:{[x]
+>  s:$[`~x`sym;exec asc distinct sym from x`table;x`sym];
+>   :?[x`table;enlist(in;`sym;enlist s);{x!x}(),`sym;((),x`columns)!(x`function;)@/:(),x`columns];
+> };
+> ```
+
+* Create a function that returns a type map dictionary which maps each type character to the appropriate null value, and the uppercase type character to the appropriate type list
+
+e.g
+```
+map: f[];
+
+map "i" -> 0Ni
+map "I" -> `int$()
+
+map "x" -> 0x00
+map "X" -> `byte$()
+```
+
+The dictionary should have 36 entries.
+
+> Generate nulls for the types you can't make by casting with the characters first, then use .Q.t for the rest:
+> 
+> ```
+> f:{
+>   map:"bBcCgGsSxX"!(0b;"B"$();" ";"";0Ng;"G"$();`;`$();"x"$0N;"X"$());
+>   :map,raze{(x;upper x)!(x$0N;upper[x]$())}each .Q.t except" bcgsx";
+>  };
+>  
+> ```
+
+* The business currently has a function which updates the sym in the following prices table to have the map in the map table using this:
+
+ ```
+ map:([sym:`AAPL`GOOGL`MSFT`AAPL`GOOGL`MSFT];map:`AP1`GO1`MS1`AP2`GO2`MS2)
+ prices:([sym:`AAPL`GOOGL`MSFT]price:137.39 2053.63 242.01)
+ {[prices;map] delete map from update sym:map from prices lj map}[prices;map]
+ 
+ sym| price
+ ---| -------
+ AP1| 137.39
+ GO1| 2053.63
+ MS1| 242.01
+ ```
+
+However, they want a function which returns a row for every map.
+Create a function which updates the sym in the prices table to the map in the map table so that there is a row for each map so that the output is:
+
+ ```
+ sym| price
+ ---| -------
+ AP1| 137.39
+ AP2| 137.39
+ GO1| 2053.63
+ GO2| 2053.63
+ MS1| 242.01
+ MS2| 242.01
+ ```
+
+> This is essentially making the inverse of the map table and then updating the sym column. A few approaches:
+> 
+> ```
+> f:{[map;prices]`sym xasc 1!(enlist[`map]!enlist`sym)xcol delete sym from map lj prices}
+> ```
+> or using exec
+> 
+> ```
+> f:{[map;prices]`sym xasc exec([sym:map]price)from map lj prices}
+> ```
+> 
+> or to avoid re-sorting the price table, group the map table by sym and then update the sym in the price table
+> ```
+> f:{[map;prices]sym2map:(exec distinct sym from map)!(exec map from map)value group exec sym from map;1!ungroup update sym:sym2map[sym]from prices}
+> ```
+
+* Create a function that will take two tables, revenue and expenses, which will calculate the total commission for each salesperson in a beverage company.
+
+Commission is 6.2% of profit per product, where profit equals revenue minus expenses, with no commission for any product to total less than 0. Round the total commission for each employee up to 2 decimal places. You do not have to display the second decimal if it is a 0, but kudos to anyone who can figure out how to do so.
+
+e.g for the below:
+
+```
+revenue:flip`employee`product`revenue!(`Bob`Bob`Alice`Alice;`tea`coffee`tea`coffee;120 243 145 265);
+expenses:flip`employee`product`expenses!(`Bob`Bob`Alice`Alice;`tea`coffee`tea`coffee;130 143 59 198);
+
+f[revenue;expenses] ->
+
+employee| commission
+--------| ----------
+Alice   | 9.49
+Bob     | 6.2
+```
+
+Your input and expected output is the following:
+
+```
+revenue:flip`employee`product`revenue!(raze 4#/:`Dan`Will`Morris`James`Nick;raze flip 5#/:`tea`coffee`water`milk;190 325 682 829 140 19 14 140 1926 293 852 609 14 1491 56 120 143 162 659 87)
+
+expenses:flip`employee`product`expenses!(raze 4#/:`Dan`Will`Morris`James`Nick;raze flip 5#/:`tea`coffee`water`milk;120 300 50 67 65 10 299 254 890 23 1290 89 54 802 12 129 430 235 145 76)
+
+f[revenue;expenses] ->
+
+employee| commission
+--------| ----------
+Dan     | 92.32
+James   | 45.45
+Morris  | 113.21
+Nick    | 32.55
+Will    | 5.21
+```
+
+>Join the expenses for each product to the revenue by employee/product columns, then calculate the profit. Caluclate 6.2% of the profit to get commission for each product, or set to 0 where profit was negative. Get the total commission by summing by employee, then use .Q.f to round it to 2 decimal places 
+>
+> ```
+> f:{[revenue;expenses]
+>  commission:revenue lj`employee`product xkey expenses;
+>  commission:update profit:revenue-expenses from commission;
+>  commission:update commission:(6.2*profit%100)|0 from commission;
+>  :select "F"$.Q.f[2;sum commission] by employee from commission;
+>  }
+>
+> ```
+>
+> Result for the question input:
+> 
+> ```
+> employee| commission
+> --------| ----------
+> Dan     | 92.32
+> James   | 45.45
+> Morris  | 113.21
+> Nick    | 32.55
+> Will    | 5.21
+> ```
 
 ## 'Hard'
 
@@ -334,3 +607,30 @@ px:([]date:raze 3#/:2021.01.01+til 3;sym:`a`b`c`a`b`c`a`b`c;price:9?100f)
 >   -----------| ----------
 >   MSFT 16:00 | 0.05333333
 > ```
+
+* Given an integer list v that contains only unique elements, and another list w with the same elements as v but with one of them repositioned, create a function that will take the two lists as arguments, and return the index of the moved element, e.g.
+
+```
+v: 10 20 30 40 50 60 70
+w: 10 20 70 30 40 50 60
+
+f[v;w] -> 2
+( 70 moved to index 2)
+```
+
+Take care of ambiguous cases like the below, where the first element is the one that moved - in this case, assume that the number with the earliest index moved.
+
+```
+f[10 20 30;20 30 10] -> 2
+(10 moved to index 2)
+```
+
+> you could do:
+> ```
+> f:{first where not x=y}
+> ```
+> but this would not handle the second ambiguous case
+> ```
+> f:{[x;y]mvd:where x<>y;mv1:first mvd;mv2:last mvd;$[00b~x[mv1]~/:@[y;(mv1;mv2)];mv1;mv2]}
+> ```
+> this gets indices for all elements that differ between the two lists/"moved" (mvd), then we get the first and last of the indices and get the corresponding values in y . we then compare the number at the first "moved" index in the original list x. if it is different from both these numbers, we can say that the first "moved" number is the one that changed - otherwise, it's the one at the end of the "moved" list, i.e this is the second case
