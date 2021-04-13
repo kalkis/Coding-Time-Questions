@@ -80,6 +80,60 @@ f 1741725 -> 1b
 f 22 -> 0b
 ```
 
+* Create a function f that merges two lists by alternating the items from each, e.g: 
+
+```
+x:`a`b`c
+y:1 2 3
+
+0N!f[x;y] ->
+(`a;1;`b;2;`c;3)
+`a
+1
+`b
+2
+`c
+3
+```
+
+* Create a function which take a single string argument that returns another function which appends that string as a suffix to its string argument
+
+.e.g:
+
+```
+addLy: f"ly";
+addLy "total" -> "totally"
+addLy "actual" -> "actually"
+```
+
+* Create a function that will return the key of the input dictionary which maps to the second highest value. Assume that the values for each key are always unique.
+
+e.g:
+
+```
+d1:`a`b`c`d!(10.50 5.2 9.3 6.7)
+d2:enlist[`a]!enlist 5.0
+d3:()!()
+
+f d1 -> `c
+f d2 -> `a
+f d3 -> ()
+```
+
+* You and a friend are playing a board game where you take turns rolling a 6 sided die and advance your piece forward the number of tiles you rolled on the die. If your piece lands on the same tile as another player's piece, you both earn a bonus.
+
+Create a function that when given both you and your friend's tile number, returns if its possible for you to earn a bonus when YOU roll the die.
+
+Note - you cannot move backwards
+
+e.g.
+
+```
+f[3;7] -> 1b
+f[1;9] -> 0b
+f[5;3] -> 0b
+```
+
 ## 'Intermediate'
 
 * Create a function to print out the first n rows of Pascals triangle: https://en.wikipedia.org/wiki/Pascal%27s_triangle
@@ -250,6 +304,108 @@ Will    | 5.21
 
 ```
 
+* Create  an 'avgvol' function that takes 3 arguments, a client or list of clients, a date, and a table with a schema like the following:
+
+```
+tradingvolume:([]date:`date$();time:`timestamp$();volume:`long$();client:`$()) 
+```
+
+which will return the average volume by hour for each client since the given date
+
+Use the file `/home/shared/liveCode/tradingvolume.csv`
+
+e.g
+
+```
+avgvol[`A;2021.03.03;tradingvolume] ->
+
+client hour| volume
+-----------| --------
+A      9   | 254.7092
+A      10  | 238.9934
+A      11  | 267.6839
+A      12  | 255.0345
+A      13  | 222.7162
+A      14  | 271.4789
+A      15  | 236.8994
+A      16  | 246.6434
+A      17  | 254
+
+avgvol[`A`B;2021.03.02;tradingvolume] -> 
+
+client hour| volume
+-----------| --------
+A      9   | 253.1391
+A      10  | 242.241
+A      11  | 267.7588
+A      12  | 252.0645
+A      13  | 225.9024
+A      14  | 269.5455
+A      15  | 231.6599
+A      16  | 247.7872
+A      17  | 254
+B      9   | 256.9385
+B      10  | 278.6087
+B      11  | 252.0059
+B      12  | 251.92
+B      13  | 250.3061
+B      14  | 245.6882
+B      15  | 244.1
+B      16  | 252.9318
+B      17  | 206.5
+
+```
+
+* Examine the table below showing votes in a mayoral race reported by different precincts:
+
+```
+t1:([precinct:1 2 3 4 5]Quimby:192 147 186 114 267;Dewey:28 90 12 21 13;Tortimer:206 312 121 408 382;AdamWest:37 21 38 39 29)
+```
+
+Create an 'election' function that returns the percentage of the total vote received by each candidate, and a column that indicates who won the election
+ - the winner is whoever took >50% of the total vote.
+ Also add a 'runoff' column which will indicate the two candidates with the highest and second highest share of the vote in the event where there is
+ no candidate with overall votes above 50%
+ 
+e.g
+
+```
+election t1 ->
+ 
+candidate| pct        win runoff
+---------| ---------------------
+AdamWest | 0.06158468 0   0
+Dewey    | 0.06158468 0   0
+Quimby   | 0.3402178  0   0
+Tortimer | 0.5366128  1   0
+```
+
+To test the runoff scenario, use this table:
+
+```
+t2:([precinct:1 2 3 4 5]Quimby:192 147 186 114 267;Dewey:28 90 12 21 13;Tortimer:206 312 121 108 382;AdamWest:37 21 38 39 29)
+
+election t2 ->
+ 
+candidate| pct       win runoff
+---------| --------------------
+AdamWest | 0.0694033 0   0
+Dewey    | 0.0694033 0   0
+Quimby   | 0.3834109 0   1
+Tortimer | 0.4777825 0   1
+```
+
+* Create a function to calculate the 'additive persistence' of a positive integer. Add together the digits of a number and count the digits of the result - the additive persistence is the number of times you would need to repeat this process on the result until it becomes a single digit number: https://mathworld.wolfram.com/AdditivePersistence.html
+
+e.g.
+
+```
+f 1 -> 1
+f 13 -> 1
+f 1234 -> 2
+f 199 -> 3
+```
+
 ## 'Hard'
 
 * Without using lj or any other join explicitly (like uj, aj, ej, ij, rj, wj etc) write a function to join two tables that gives similar functionality to lj.
@@ -277,7 +433,6 @@ f `c -> "undefined"
 px:([]date:raze 3#/:2021.01.01+til 3;sym:`a`b`c`a`b`c`a`b`c;price:9?100f)
 ```
 
-
 * Find the volume weighted average price (VWAP) for each sym in 5 minute buckets in the resources/intermediate/trades.csv table and the time-weighted average spread (TWAS)in 5 minutes buckets in the resources/intermediate/quotes.csv table. Which sym(s) have the highest VWAP and TWAS?
 
 * Given an integer list v that contains only unique elements, and another list w with the same elements as v but with one of them repositioned, create a function that will take the two lists as arguments, and return the index of the moved element, e.g.
@@ -291,4 +446,90 @@ f[v;w] -> 2 ( 70 moved to index 2)
 Take care of ambiguous cases like the below, where the first element is the one that moved - in this case, assume that the number with the earliest index moved.
 
 f[10 20 30;20 30 10] -> 2 (10 moved to index 2)
+```
+
+* A bookshop's computer system stores its inventory in a particular format. 
+Each book is given a unique code of 3 - 5 characters, followed by a space and then the quantity of that book inside the store
+The first character of the code represents what category that book belongs to, e.g "A", "B", "G" etc
+
+```
+stocklist:("ABART 20";"CDEF 50";"BKWRK 25";"BTS 89";"DRTYM 60")
+```
+
+Write a 'categoryReport' function that takes two arguments, the stocklist and a list of catgeory characters, and returns a string of the total number of books
+in the stocklist for each of those categories in this format : "<category0>:<quantity0> - <category1>:<quantity1> - ..."
+
+```
+categories:"ABCW"
+
+categoryReport[stocklist;categories] ->
+
+"A:20 - B:114 - C:50 - W:0"
+```
+
+* In the same bookshop from the question above, it is discovered that the stocklist has been saved in the wrong format, and is now compressed into a single string:
+
+```
+compressed:"ABART20CDEF50BKWRK25BTS89DRTYM60"
+```
+
+write an 'uncompress' function that takes this compressed string and outputs the original stocklist
+
+```
+uncompress compressed ->
+
+("ABART 20";"CDEF 50";"BKWRK 25";"BTS 89";"DRTYM 60")
+```
+
+* Create a function 'squarecode' that creates a secret message from its input using the Square Code method. 
+The function takes a string vector and strips out the spaces and special characters, then formats the
+result into a square. The secret message is then made from the characters in the columns of the square, read from left to right.,
+and then joined together with spaces between each 'word'.
+If one side of the square would be longer than the either(i.e a rectangle), use the longer side as the width.
+The result is not case sensitive
+
+e.g
+
+"have a nice day" ->
+"haveaniceday" ->
+"have"
+"anic"
+"eday" ->
+"hae and via ecy"
+
+```
+s1:"have a nice day"
+s2:"The quick brown fox jumped over the lazy dog"
+s3:"Harder, better, faster, stronger"
+
+squarecode s1 -> "hae and via ecy"
+squarecode s2 -> "TCNMEA HKFPRZ EBOETY QRXDHD UOJOEO IWUVLG"
+squarecode s3 -> "HBFSE AEATR RTSR DTTO EEEN RRRG"
+```
+
+* A detective arriving at the scene of a crime identifies 10 people who were present. One by one he asks them that out of the 10 people there, how many of them had they met before tonight? Their answers are represented by the list l below:
+
+```
+l: 5 3 0 2 6 2 0 7 2 5
+```
+
+These numbers seem suspicious however. Create a function 'deduce' that will return false if it is possible that someone is lying, or true otherwise. Assume that no one has given a wrong answer, and that if a person knows one person, that person will also know at least one person. Hint: the Havel-Hakimi algorithm will help you here: https://www.geogebra.org/m/ekajwspy 
+
+```
+deduce l -> 0b
+```
+Other test cases:
+
+```
+l2:3 1 2 3 1 0
+l3:1 1
+l4:6 0 10 10 10 5 8 3 0 14 16 2 13 1 2 13 6 15 5 1
+l5:1 0
+l6:0 0
+
+deduce l2 -> 1b
+deduce l3 -> 1b
+deduce l4 -> 0b
+deduce 15 -> 0b
+deduce l6 -> 1b
 ```
