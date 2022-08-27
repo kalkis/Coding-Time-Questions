@@ -1,5 +1,5 @@
 # Coding-Time-Questions
-Selection of questions of varying difficulty for live coding challenges
+Selection of questions of varying difficulty for kdb+ live coding challenges.
 
 Full list of questions grouped by difficulty can be found in *questions/questions-master-list.md*
 
